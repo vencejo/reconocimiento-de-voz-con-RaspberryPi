@@ -53,12 +53,10 @@ class Mic:
 		needs to be restarted.
 		"""
 		r = sr.Recognizer()
+		r.dynamic_energy_threshold = True
 		m = sr.Microphone(device_index=0, sample_rate=44100)
-		print("Ajustando el reconocedor al sonido ambiente por %s segundos" % str(LISTEN_TIME))
-		with m as source:
-			# we only need to calibrate once, before we start listening
-			r.adjust_for_ambient_noise(source, duration = THRESHOLD_TIME) 
-			print("Reconocedor ajustado, ya se puede hablar")
+		
+		with m as source:	
 			try:
 				audio = r.listen(m, timeout=LISTEN_TIME)
 				mensaje = self.stt_engine.transcribe(audio)
@@ -100,13 +98,14 @@ class Mic:
 		self.speaker.play(jasperpath.data('audio', 'beep_hi.wav'))
 		
 		r = sr.Recognizer()
-		r.energy_threshold = threshold
+		r.dynamic_energy_threshold = True
 		m = sr.Microphone(device_index=0, sample_rate=44100)
 		
 		with m as source:
 			
 			try:
 				audio = r.listen(m, timeout=listen_time)
+				self.speaker.play(jasperpath.data('audio', 'beep_lo.wav'))
 				mensaje = self.stt_engine.transcribe(audio)
 				fraseInterpretada = mensaje.encode('utf-8')
 				self._logger.debug(fraseInterpretada)

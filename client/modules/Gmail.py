@@ -4,8 +4,6 @@ import email
 import re
 from dateutil import parser
 
-WORDS = ["EMAIL", "INBOX"]
-
 
 def getSender(email):
     """
@@ -100,30 +98,30 @@ def handle(text, mic, profile):
         msgs = fetchUnreadEmails(profile, limit=5)
 
         if isinstance(msgs, int):
-            response = "You have %d unread emails." % msgs
+            response = "Tiene %d correos sin leer" % msgs
             mic.say(response)
             return
 
         senders = [getSender(e) for e in msgs]
     except imaplib.IMAP4.error:
         mic.say(
-            "I'm sorry. I'm not authenticated to work with your Gmail.")
+            "Lo siento, parece que no estoy autorizado a leer su correo")
         return
 
     if not senders:
-        mic.say("You have no unread emails.")
+        mic.say("No tiene correos por leer")
     elif len(senders) == 1:
-        mic.say("You have one unread email from " + senders[0] + ".")
+        mic.say("Tiene un nuevo correo de  " + senders[0] + ".")
     else:
-        response = "You have %d unread emails" % len(
+        response = "Tiene %d correos sin leer" % len(
             senders)
         unique_senders = list(set(senders))
         if len(unique_senders) > 1:
             unique_senders[-1] = 'and ' + unique_senders[-1]
-            response += ". Senders include: "
+            response += "de "
             response += '...'.join(senders)
         else:
-            response += " from " + unique_senders[0]
+            response += " de " + unique_senders[0]
 
         mic.say(response)
 
@@ -135,4 +133,4 @@ def isValid(text):
         Arguments:
         text -- user-input, typically transcribed speech
     """
-    return bool(re.search(r'\bemail\b', text, re.IGNORECASE))
+    return bool(re.search(r'\bcorreo\b', text, re.IGNORECASE))

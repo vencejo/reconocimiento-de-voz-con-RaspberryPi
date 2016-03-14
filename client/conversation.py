@@ -3,7 +3,7 @@ import logging
 from notifier import Notifier
 from brain import Brain
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 class Conversation(object):
 

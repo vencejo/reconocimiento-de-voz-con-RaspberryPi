@@ -5,6 +5,7 @@ from modules import Gmail
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 
+logging.basicConfig(level=logging.WARNING)
 
 class Notifier(object):
 

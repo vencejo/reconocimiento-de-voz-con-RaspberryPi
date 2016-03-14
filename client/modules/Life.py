@@ -2,9 +2,6 @@
 import random
 import re
 
-WORDS = ["vida"]
-
-
 def handle(text, mic, profile):
     """
         Responds to user-input, typically speech text, by relaying the

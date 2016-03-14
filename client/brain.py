@@ -41,17 +41,11 @@ class Brain(object):
             try:
                 loader = finder.find_module(name)
                 mod = loader.load_module(name)
+                modules.append(mod) 
             except:
                 logger.warning("Skipped module '%s' due to an error.", name,
                                exc_info=True)
-            else:
-                if hasattr(mod, 'WORDS'):
-                    logger.debug("Found module '%s' with words: %r", name,
-                                 mod.WORDS)
-                    modules.append(mod)
-                else:
-                    logger.warning("Skipped module '%s' because it misses " +
-                                   "the WORDS constant.", name)
+   	     
         modules.sort(key=lambda mod: mod.PRIORITY if hasattr(mod, 'PRIORITY')
                      else 0, reverse=True)
         return modules
