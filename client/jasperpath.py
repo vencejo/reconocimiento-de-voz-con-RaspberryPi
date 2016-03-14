@@ -18,3 +18,6 @@ def config(*fname):
 
 def data(*fname):
     return os.path.join(DATA_PATH, *fname)
+
+
+print(APP_PATH )

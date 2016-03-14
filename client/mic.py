@@ -14,8 +14,7 @@ import os
 import speech_recognition as sr
 import time
 
-logging.basicConfig(level=logging.DEBUG)
-fraseInterpretada = ""
+#logging.basicConfig(level=logging.DEBUG)
 
 class Mic:
 
@@ -55,18 +54,20 @@ class Mic:
 		"""
 		r = sr.Recognizer()
 		m = sr.Microphone(device_index=0, sample_rate=44100)
-		self._logger.debug("Ajustando el reconocedor al sonido ambiente")
+		print("Ajustando el reconocedor al sonido ambiente por %s segundos" % str(LISTEN_TIME))
 		with m as source:
 			# we only need to calibrate once, before we start listening
 			r.adjust_for_ambient_noise(source, duration = THRESHOLD_TIME) 
-			self._logger.debug("Reconocedor ajustado, ya se puede hablar")
+			print("Reconocedor ajustado, ya se puede hablar")
+			try:
+				audio = r.listen(m, timeout=LISTEN_TIME)
+				mensaje = self.stt_engine.transcribe(audio)
+				fraseInterpretada = mensaje.encode('utf-8')
+				self._logger.debug(fraseInterpretada)
+			except sr.WaitTimeoutError:
+				print("No se ha escuchado nada")
+				fraseInterpretada = ""
 			
-			audio = r.listen(m, timeout=LISTEN_TIME)
-			mensaje = self.stt_engine.transcribe(audio)
-			fraseInterpretada = mensaje.encode('utf-8')
-			self._logger.debug(fraseInterpretada)
-			
-		
 		if PERSONA in fraseInterpretada:
 			self._logger.debug("localizada palabra clave")
 		
@@ -77,73 +78,43 @@ class Mic:
 		
 			
         
-    def activeListen(self, THRESHOLD=None, LISTEN=True, MUSIC=False):
+    def activeListen(self, THRESHOLD=None, LISTEN_TIME=5, MUSIC=False):
         """
             Records until a second of silence or times out after 12 seconds
 
             Returns the first matching string or None
         """
 
-        options = self.activeListenToAllOptions(THRESHOLD, LISTEN, MUSIC)
+        options = self.activeListenToAllOptions(THRESHOLD, LISTEN_TIME, MUSIC)
         if options:
             return options[0]
 
-    def activeListenToAllOptions(self, THRESHOLD=None, LISTEN=True,
+    def activeListenToAllOptions(self, threshold , listen_time=5,
                                  MUSIC=False):
-        """
-            Records until a second of silence or times out after 12 seconds
-
-            Returns a list of the matching options or None
-        """
-
-        # check if no threshold provided
-        if THRESHOLD is None:
-            THRESHOLD = self.fetchThreshold()
-
-        self.speaker.play(jasperpath.data('audio', 'beep_hi.wav'))
-
-        # prepare recording stream
-        stream = self._audio.open(format=pyaudio.paInt16,
-                                  channels=1,
-                                  rate=RATE,
-                                  input=True,
-                                  frames_per_buffer=CHUNK)
-
-        frames = []
-        # increasing the range # results in longer pause after command
-        # generation
-        lastN = [THRESHOLD * 1.2 for i in range(30)]
-
-        for i in range(0, RATE / CHUNK * LISTEN_TIME):
-
-            data = stream.read(CHUNK)
-            frames.append(data)
-            score = self.getScore(data)
-
-            lastN.pop(0)
-            lastN.append(score)
-
-            average = sum(lastN) / float(len(lastN))
-
-            # TODO: 0.8 should not be a MAGIC NUMBER!
-            if average < THRESHOLD * 0.8:
-                break
-
-        self.speaker.play(jasperpath.data('audio', 'beep_lo.wav'))
-
-        # save the audio data
-        stream.stop_stream()
-        stream.close()
-
-        with tempfile.SpooledTemporaryFile(mode='w+b') as f:
-            wav_fp = wave.open(f, 'wb')
-            wav_fp.setnchannels(1)
-            wav_fp.setsampwidth(pyaudio.get_sample_size(pyaudio.paInt16))
-            wav_fp.setframerate(RATE)
-            wav_fp.writeframes(''.join(frames))
-            wav_fp.close()
-            f.seek(0)
-            return self.active_stt_engine.transcribe(f)
+		"""
+			Records until a second of silence or times out after 12 seconds
+		
+			Returns a list of the matching options or None
+		"""
+		
+		self.speaker.play(jasperpath.data('audio', 'beep_hi.wav'))
+		
+		r = sr.Recognizer()
+		r.energy_threshold = threshold
+		m = sr.Microphone(device_index=0, sample_rate=44100)
+		
+		with m as source:
+			
+			try:
+				audio = r.listen(m, timeout=listen_time)
+				mensaje = self.stt_engine.transcribe(audio)
+				fraseInterpretada = mensaje.encode('utf-8')
+				self._logger.debug(fraseInterpretada)
+				print(fraseInterpretada)
+				return fraseInterpretada
+			except sr.WaitTimeoutError:
+				print("No se ha escuchado nada")
+				return ""
 
     def say(self, phrase,
             OPTIONS=" -vdefault+m3 -p 40 -s 160 --stdout > say.wav"):
