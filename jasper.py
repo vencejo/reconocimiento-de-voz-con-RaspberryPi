@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8-*-
 
 import os
@@ -82,16 +82,10 @@ class Jasper(object):
         try:
             stt_engine_slug = self.config['stt_engine']
         except KeyError:
-            stt_engine_slug = 'sphinx'
+            stt_engine_slug = 'AT&T'
             logger.warning("stt_engine not specified in profile, defaulting " +
                            "to '%s'", stt_engine_slug)
         stt_engine_class = stt.get_engine_by_slug(stt_engine_slug)
-
-        try:
-            slug = self.config['stt_passive_engine']
-            stt_passive_engine_class = stt.get_engine_by_slug(slug)
-        except KeyError:
-            stt_passive_engine_class = stt_engine_class
 
         try:
             tts_engine_slug = self.config['tts_engine']
@@ -103,7 +97,6 @@ class Jasper(object):
 
         # Initialize Mic
         self.mic = Mic(tts_engine_class.get_instance(),
-                       stt_passive_engine_class.get_passive_instance(),
                        stt_engine_class.get_active_instance())
 
     def run(self):
@@ -114,7 +107,7 @@ class Jasper(object):
             salutation = "How can I be of service?"
         self.mic.say(salutation)
 
-        conversation = Conversation("JASPER", self.mic, self.config)
+        conversation = Conversation("cristal", self.mic, self.config)
         conversation.handleForever()
 
 if __name__ == "__main__":
