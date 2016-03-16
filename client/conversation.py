@@ -22,10 +22,10 @@ class Conversation(object):
         self._logger.info("Starting to handle conversation with keyword '%s'.",
                           self.persona)
         while True:
-            # Print notifications until empty
-            notifications = self.notifier.getAllNotifications()
-            for notif in notifications:
-                self._logger.info("Received notification: '%s'", str(notif))
+            ## Print notifications until empty
+            #notifications = self.notifier.getAllNotifications()
+            #for notif in notifications:
+                #self._logger.info("Received notification: '%s'", str(notif))
 
             self._logger.debug("Started listening for keyword '%s'",
                                self.persona)
