@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8-*-
 """
 A Speaker handles audio output from Jasper to the user

@@ -3,6 +3,7 @@ import feedparser
 from client import app_utils
 import re
 from semantic.numbers import NumberService
+import unicodedata
 
 PRIORITY = 3
 
@@ -28,6 +29,10 @@ def getTopArticles(maxResults=None):
             break
 
     return articles
+    
+
+def eliminaTildes(s):
+    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
 
 def handle(text, mic, profile):
@@ -48,7 +53,7 @@ def handle(text, mic, profile):
     all_titles = "... ".join(str(idx + 1) + ")" +
                              title for idx, title in enumerate(titles))
                              
-    mic.say("Estos son los titulares del momento " + all_titles.encode('ascii', 'ignore'))
+    mic.say("Estos son los titulares del momento " + eliminaTildes(all_titles))
         
 
 
