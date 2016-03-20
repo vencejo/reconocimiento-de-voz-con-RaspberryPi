@@ -101,7 +101,7 @@ class Jasper(object):
 
     def run(self):
         if 'first_name' in self.config:
-            salutation = ("Como puedo ayudarlo, %s?" % self.config["first_name"])
+            salutation = ("Como puedo ayudarlo español hipérbola, %s?" % self.config["first_name"])
             print("Reconocedor ajustado, ya se puede hablar, diga " +  "\"" + "espejo" + "\"" + " y despues del pitido de la orden" )
         else:
             salutation = "Como puedo ayudarlo?"

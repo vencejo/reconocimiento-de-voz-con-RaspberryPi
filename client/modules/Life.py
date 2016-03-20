@@ -13,7 +13,7 @@ def handle(text, mic, profile):
         profile -- contains information related to the user (e.g., phone
                    number)
     """
-    mic.say("Es 42")
+    mic.say("Es 42, raúl hiperbólico ñoño")
 
 
 def isValid(text):

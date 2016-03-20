@@ -5,7 +5,7 @@ from modules import Gmail
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+#logging.basicConfig(level=logging.DEBUG)
 
 class Notifier(object):
 
@@ -46,7 +46,7 @@ class Notifier(object):
             lastDate = Gmail.getMostRecentDate(emails)
 
         def styleEmail(e):
-            return "New email from %s." % Gmail.getSender(e)
+            return "Nuevo correo de %s." % Gmail.getSender(e)
 
         for e in emails:
             self.q.put(styleEmail(e))

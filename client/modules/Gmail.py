@@ -19,7 +19,7 @@ def getSender(email):
     m = re.match(r'(.*)\s<.*>', sender)
     if m:
         return m.group(1)
-    return sender
+    return unicode(sender)
 
 
 def getDate(email):
@@ -134,3 +134,8 @@ def isValid(text):
         text -- user-input, typically transcribed speech
     """
     return bool(re.search(r'\bcorreo\b', text, re.IGNORECASE))
+
+if __name__ == "__main__":
+    
+   pass
+    
